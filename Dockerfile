@@ -12,13 +12,13 @@ ENV POETRY_VERSION=1.8.2 \
     POETRY_HOME="/opt/poetry" \
     POETRY_VIRTUALENVS_IN_PROJECT=true \
     POETRY_NO_INTERACTION=1
-ENV PATH="$POETRY_HOME/bin:$PATH"
 
-RUN curl -sSL https://install.python.org | python3 -
+RUN curl -sSL https://install.python-poetry.org | python3 - && \
+    ln -s /opt/poetry/bin/poetry /usr/local/bin/poetry
 
 COPY pyproject.toml poetry.lock* ./
 
-RUN poetry install --without dev --no-root
+RUN poetry install --no-root
 
 # STAGE 2: Final app image
 FROM python:3.13-slim AS runner

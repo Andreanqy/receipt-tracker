@@ -1,18 +1,15 @@
-[project]
+[tool.poetry]
 name = "receipt-tracker"
 version = "0.1.0"
 description = ""
-authors = [
-    {name = "Андрей Мохов",email = "mohovandrew2@gmail.com"}
-]
-requires-python = ">=3.13"
-dependencies = [
-    "fastapi (>=0.136.3,<0.137.0)",
-    "uvicorn (>=0.48.0,<0.49.0)",
-    "pydantic-settings (>=2.14.1,<3.0.0)"
-]
+authors = ["Андрей Мохов <mohovandrew2@gmail.com>"]
 
+[tool.poetry.dependencies]
+python = ">=3.13"
+fastapi = ">=0.136.3,<0.137.0"
+uvicorn = ">=0.48.0,<0.49.0"
+pydantic-settings = ">=2.14.1,<3.0.0"
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
