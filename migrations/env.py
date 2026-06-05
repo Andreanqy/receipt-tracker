@@ -11,6 +11,8 @@ from app.config import settings
 
 from app.models.base import Base
 from app.models.user import User
+from app.models.receipt import Receipt
+from app.models.receipt_item import ReceiptItem
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -66,14 +68,15 @@ def do_run_migrations(connection: Connection) -> None:
         context.run_migrations()
 
 
-async def run_async_migrations() -> None:
+async def run_async_migrations(configuration: dict) -> None:
     """In this scenario we need to create an Engine
     and associate a connection with the context.
 
     """
 
     connectable = async_engine_from_config(
-        config.get_section(config.config_ini_section, {}),
+        configuration,
+        #config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
@@ -90,13 +93,15 @@ def run_migrations_online() -> None:
     configuration = config.get_section(config.config_ini_section) or {}
     configuration["sqlalchemy.url"] = settings.DATABASE_URL
 
+    """
     connectable = async_engine_from_config(
         configuration,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
+    """
 
-    #asyncio.run(run_async_migrations())
+    asyncio.run(run_async_migrations(configuration))
 
 
 if context.is_offline_mode():

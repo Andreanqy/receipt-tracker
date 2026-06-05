@@ -1,7 +1,7 @@
 import uuid
 from sqlalchemy import String
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models.base import Base
 
 class User(Base):
@@ -22,3 +22,5 @@ class User(Base):
         String(255),
         nullable=False
     )
+
+    receipts = relationship("Receipt", back_populates="user", cascade="all, delete-orphan")
