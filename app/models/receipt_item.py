@@ -13,6 +13,12 @@ class ReceiptItem(Base):
         default=uuid.uuid4
     )
 
+    receipt_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("receipts.id", ondelete="CASCADE"),
+        nullable=False
+    )
+
     name: Mapped[str] = mapped_column(
         String(255),
         nullable=False

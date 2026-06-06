@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     MINIO_ENDPOINT: str
     MINIO_BUCKET_NAME: str
 
+    # Env
+    SECRET_KEY: str
+
     @computed_field
     @property
     def DATABASE_URL(self) -> str:
