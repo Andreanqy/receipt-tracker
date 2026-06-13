@@ -1,4 +1,5 @@
 import uuid
+from decimal import Decimal
 from sqlalchemy import String, Numeric, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -23,16 +24,16 @@ class ReceiptItem(Base):
         String(255),
         nullable=False
     )
-    price: Mapped[float] = mapped_column(
+    price: Mapped[Decimal] = mapped_column(
         Numeric(10, 2),
         nullable=False
     )
-    quantity: Mapped[int] = mapped_column(
+    quantity: Mapped[Decimal] = mapped_column(
         Numeric(10, 3),
-        default=1.000,
+        default=Decimal("1.000"),
         nullable=False
     )
-    sum: Mapped[float] = mapped_column(
+    sum: Mapped[Decimal] = mapped_column(
         Numeric(10, 2),
         nullable=False
     )

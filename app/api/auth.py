@@ -14,7 +14,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 async def register(user_in: UserCreate, db: AsyncSession = Depends(get_db)):
     user = await get_user_by_email(db, email=user_in.email)
     if user:
-        raise HTTPException(status_code=400, default="Email already registered")
+        raise HTTPException(status_code=400, detail="Email already registered")
     return await create_user(db, user_in)
 
 @router.post("/login", response_model=Token)

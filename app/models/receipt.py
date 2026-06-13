@@ -1,4 +1,5 @@
 import uuid, enum
+from decimal import Decimal
 from datetime import datetime, timezone
 from sqlalchemy import Enum, String, Numeric, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
@@ -31,7 +32,7 @@ class Receipt(Base):
         index=True
     )
 
-    total_sum: Mapped[float] = mapped_column(
+    total_sum: Mapped[Decimal] = mapped_column(
         Numeric(10, 2),
         nullable=False
     )

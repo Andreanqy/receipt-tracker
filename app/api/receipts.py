@@ -1,4 +1,4 @@
-from uuid import uuid4
+import uuid
 
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -6,11 +6,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.api.deps import get_current_user
 from app.models.user import User
-from app.models.receipt import Receipt, ReceiptStatus
+from app.crud.receipt import create_receipt
 from app.services.s3 import s3_service
 from app.schemas.receipt import ReceiptUploadResponse
 
 router = APIRouter(prefix="/receipts", tags=["Receipts"])
+
+MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
 
 
 @router.post("/upload", response_model=ReceiptUploadResponse, status_code=status.HTTP_201_CREATED)
@@ -25,8 +27,16 @@ async def upload_receipt(
             detail="The file must be an image",
         )
 
-    file_extension = file.filename.split(".")[-1] if file.filename and "." in file.filename else "jpg"
-    receipt_id = uuid4()
+    content = await file.read(MAX_FILE_SIZE + 1)
+    if len(content) > MAX_FILE_SIZE:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail="File size exceeds 10 MB limit",
+        )
+    await file.seek(0)
+
+    file_extension = file.filename.rsplit(".", 1)[-1] if file.filename and "." in file.filename else "jpg"
+    receipt_id = uuid.uuid4()
     object_name = f"{current_user.id}/{receipt_id}.{file_extension}"
 
     try:
@@ -37,15 +47,6 @@ async def upload_receipt(
             detail="Failed to upload file to storage",
         )
 
-    receipt = Receipt(
-        id=receipt_id,
-        user_id=current_user.id,
-        total_sum=0,
-        filepath=filepath,
-        status=ReceiptStatus.PROCESSING,
-    )
-    db.add(receipt)
-    await db.commit()
-    await db.refresh(receipt)
+    receipt = await create_receipt(db, receipt_id=receipt_id, user_id=current_user.id, filepath=filepath)
 
     return ReceiptUploadResponse(id=receipt.id, status=receipt.status.value)

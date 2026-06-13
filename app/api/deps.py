@@ -6,7 +6,6 @@ import uuid
 
 from app.database import get_db
 from app.models.user import User
-from app.crud.user import get_user_by_email
 from app.core.security import SECRET_KEY, ALGORITHM
 from sqlalchemy.future import select
 
