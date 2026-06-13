@@ -23,6 +23,14 @@ class Settings(BaseSettings):
     MINIO_ENDPOINT: str
     MINIO_BUCKET_NAME: str
 
+    @property
+    def MINIO_ACCESS_KEY(self) -> str:
+        return self.MINIO_ROOT_USER
+    
+    @property
+    def MINIO_SECRET_KEY(self) -> str:
+        return self.MINIO_ROOT_PASSWORD
+
     # Env
     SECRET_KEY: str
 
