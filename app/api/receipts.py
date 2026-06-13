@@ -49,4 +49,7 @@ async def upload_receipt(
 
     receipt = await create_receipt(db, receipt_id=receipt_id, user_id=current_user.id, filepath=filepath)
 
+    from app.tasks.receipt import process_receipt
+    process_receipt.delay(str(receipt.id))
+
     return ReceiptUploadResponse(id=receipt.id, status=receipt.status.value)

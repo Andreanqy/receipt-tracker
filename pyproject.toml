@@ -5,7 +5,7 @@ description = ""
 authors = ["Андрей Мохов <mohovandrew2@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = ">=3.13"
+python = ">=3.12"
 fastapi = ">=0.136.3,<0.137.0"
 uvicorn = ">=0.48.0,<0.49.0"
 pydantic-settings = ">=2.14.1,<3.0.0"
@@ -17,6 +17,10 @@ bcrypt = "^5.0.0"
 email-validator = "^2.3.0"
 python-multipart = "^0.0.32"
 aioboto3 = "^15.5.0"
+celery = {extras = ["redis"], version = "^5.6.3"}
+pyzbar = "^0.1.9"
+pillow = "^12.2.0"
+httpx = "^0.28.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

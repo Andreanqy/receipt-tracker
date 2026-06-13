@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     @property
     def MINIO_ACCESS_KEY(self) -> str:
         return self.MINIO_ROOT_USER
-    
+
     @property
     def MINIO_SECRET_KEY(self) -> str:
         return self.MINIO_ROOT_PASSWORD
@@ -34,11 +34,19 @@ class Settings(BaseSettings):
     # Env
     SECRET_KEY: str
 
+    # External API (proverkacheka.com)
+    PROVERKACHEKA_TOKEN: str
+
     @computed_field
     @property
     def DATABASE_URL(self) -> str:
         return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
-    
+
+    @computed_field
+    @property
+    def REDIS_URL(self) -> str:
+        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/0"
+
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 settings = Settings()

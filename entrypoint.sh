@@ -10,8 +10,11 @@ done
 
 echo "PostgreSQL started!"
 
-echo "Running alembic migrations..."
-alembic upgrade head
-
-echo "Starting uvicorn server..."
-exec uvicorn app.main:app --host 0.0.0.0 --port 8000
+if [ $# -eq 0 ]; then
+    echo "Running alembic migrations..."
+    alembic upgrade head
+    echo "Starting uvicorn server..."
+    exec uvicorn app.main:app --host 0.0.0.0 --port 8000
+else
+    exec "$@"
+fi

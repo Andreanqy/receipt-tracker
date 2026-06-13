@@ -28,6 +28,12 @@ class S3Service:
             except Exception:
                 await client.create_bucket(Bucket=self.bucket_name)
     
+    async def download_file(self, object_name: str) -> bytes:
+        async with await self._get_client() as client:
+            response = await client.get_object(Bucket=self.bucket_name, Key=object_name)
+            async with response["Body"] as stream:
+                return await stream.read()
+
     async def upload_file(self, file: UploadFile, object_name: str) -> str:
         async with await self._get_client() as client:
             filecontent = await file.read()
