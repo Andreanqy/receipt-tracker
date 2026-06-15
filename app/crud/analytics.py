@@ -20,8 +20,8 @@ async def get_summary(
     filters = [
         Receipt.user_id == user_id,
         Receipt.status == ReceiptStatus.COMPLETED,
-        Receipt.created_at >= from_dt,
-        Receipt.created_at <= to_dt,
+        Receipt.operation_time >= from_dt,
+        Receipt.operation_time <= to_dt,
     ]
 
     totals = (await db.execute(
@@ -44,7 +44,7 @@ async def get_summary(
 
     by_day = (await db.execute(
         select(
-            cast(Receipt.created_at, Date).label("day"),
+            cast(Receipt.operation_time, Date).label("day"),
             func.sum(Receipt.total_sum).label("sum"),
         )
         .where(*filters)

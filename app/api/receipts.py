@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.api.deps import get_current_user
 from app.models.user import User
-from app.crud.receipt import create_receipt
+from app.crud.receipt import create_receipt, get_receipt_by_id_and_user
 from app.services.s3 import s3_service
 from app.schemas.receipt import ReceiptUploadResponse
 
@@ -53,3 +53,18 @@ async def upload_receipt(
     process_receipt.delay(str(receipt.id))
 
     return ReceiptUploadResponse(id=receipt.id, status=receipt.status.value)
+
+
+@router.get("/{receipt_id}/image")
+async def get_receipt_image(
+    receipt_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    receipt = await get_receipt_by_id_and_user(db, receipt_id, current_user.id)
+    if receipt is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Receipt not found")
+
+    object_name = receipt.filepath[len(s3_service.bucket_name) + 1:]
+    url = await s3_service.get_presigned_url(object_name)
+    return {"url": url}

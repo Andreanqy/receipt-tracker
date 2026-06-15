@@ -34,6 +34,14 @@ class S3Service:
             async with response["Body"] as stream:
                 return await stream.read()
 
+    async def get_presigned_url(self, object_name: str, expires: int = 900) -> str:
+        async with await self._get_client() as client:
+            return await client.generate_presigned_url(
+                "get_object",
+                Params={"Bucket": self.bucket_name, "Key": object_name},
+                ExpiresIn=expires,
+            )
+
     async def upload_file(self, file: UploadFile, object_name: str) -> str:
         async with await self._get_client() as client:
             filecontent = await file.read()
