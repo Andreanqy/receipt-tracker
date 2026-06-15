@@ -1,5 +1,6 @@
 import uuid
 from decimal import Decimal
+from typing import Optional
 from sqlalchemy import String, Numeric, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -36,6 +37,10 @@ class ReceiptItem(Base):
     sum: Mapped[Decimal] = mapped_column(
         Numeric(10, 2),
         nullable=False
+    )
+    category: Mapped[Optional[str]] = mapped_column(
+        String(100),
+        nullable=True
     )
 
     receipt = relationship("Receipt", back_populates="items")

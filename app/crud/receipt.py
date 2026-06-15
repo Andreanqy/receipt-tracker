@@ -41,6 +41,7 @@ async def create_receipt_items(
             price=item["price"],
             quantity=item.get("quantity", Decimal("1.000")),
             sum=item["sum"],
+            category=item.get("category"),
         ))
     await db.commit()
 

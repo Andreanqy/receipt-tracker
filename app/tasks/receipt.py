@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.pool import NullPool
 
 from app.config import settings
+from app.services.categorization import categorize_items
 from app.crud.receipt import (
     create_receipt_items,
     get_receipt_by_id,
@@ -87,6 +88,7 @@ async def _process(receipt_id: str) -> None:
 
         receipt_json = data["data"]["json"]
         total_sum = Decimal(str(receipt_json["totalSum"])) / 100
+        raw_items = receipt_json.get("items", [])
         items = [
             {
                 "name": item["name"],
@@ -94,8 +96,12 @@ async def _process(receipt_id: str) -> None:
                 "quantity": Decimal(str(item.get("quantity", 1))),
                 "sum": Decimal(str(item["sum"])) / 100,
             }
-            for item in receipt_json.get("items", [])
+            for item in raw_items
         ]
+
+        categories = await categorize_items([i["name"] for i in items])
+        for item, category in zip(items, categories):
+            item["category"] = category
 
         await create_receipt_items(db, receipt.id, items)
         await update_receipt_after_processing(

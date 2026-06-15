@@ -21,6 +21,7 @@ celery = {extras = ["redis"], version = "^5.6.3"}
 pyzbar = "^0.1.9"
 pillow = "^12.2.0"
 httpx = "^0.28.1"
+anthropic = "^0.109.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

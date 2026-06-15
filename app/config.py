@@ -37,6 +37,9 @@ class Settings(BaseSettings):
     # External API (proverkacheka.com)
     PROVERKACHEKA_TOKEN: str
 
+    # Anthropic
+    ANTHROPIC_API_KEY: str
+
     @computed_field
     @property
     def DATABASE_URL(self) -> str:
