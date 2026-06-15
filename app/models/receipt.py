@@ -37,7 +37,7 @@ class Receipt(Base):
         nullable=False
     )
 
-    created_at: Mapped[datetime] = mapped_column(
+    operation_time: Mapped[datetime] = mapped_column(
         DateTime,
         default=utc_now_naive,
         nullable=False

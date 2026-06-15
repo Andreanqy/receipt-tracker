@@ -1,6 +1,7 @@
 import asyncio
 import uuid
 from decimal import Decimal
+from datetime import datetime, timezone
 from io import BytesIO
 
 import httpx
@@ -88,6 +89,7 @@ async def _process(receipt_id: str) -> None:
 
         receipt_json = data["data"]["json"]
         total_sum = Decimal(str(receipt_json["totalSum"])) / 100
+        operation_time = datetime.fromisoformat(str(receipt_json["dateTime"]))
         raw_items = receipt_json.get("items", [])
         items = [
             {
@@ -110,4 +112,5 @@ async def _process(receipt_id: str) -> None:
             status=ReceiptStatus.COMPLETED,
             total_sum=total_sum,
             qr_raw_data=qr_raw,
+            operation_time=operation_time,
         )
