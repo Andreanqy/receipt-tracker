@@ -39,6 +39,7 @@ class Settings(BaseSettings):
 
     # Anthropic
     ANTHROPIC_API_KEY: str
+    ANTHROPIC_BASE_URL: str | None = None
 
     @computed_field
     @property

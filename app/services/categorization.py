@@ -37,7 +37,10 @@ _client: AsyncAnthropic | None = None
 def _get_client() -> AsyncAnthropic:
     global _client
     if _client is None:
-        _client = AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
+        _client = AsyncAnthropic(
+            api_key=settings.ANTHROPIC_API_KEY,
+            base_url=settings.ANTHROPIC_BASE_URL,
+        )
     return _client
 
 
