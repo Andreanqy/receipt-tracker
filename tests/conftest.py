@@ -1,0 +1,16 @@
+import os
+
+os.environ.setdefault("POSTGRES_USER", "test")
+os.environ.setdefault("POSTGRES_PASSWORD", "test")
+os.environ.setdefault("POSTGRES_DB", "test")
+os.environ.setdefault("POSTGRES_HOST", "localhost")
+os.environ.setdefault("POSTGRES_PORT", "5432")
+os.environ.setdefault("REDIS_HOST", "localhost")
+os.environ.setdefault("REDIS_PORT", "6379")
+os.environ.setdefault("MINIO_ROOT_USER", "test")
+os.environ.setdefault("MINIO_ROOT_PASSWORD", "test")
+os.environ.setdefault("MINIO_ENDPOINT", "localhost:9000")
+os.environ.setdefault("MINIO_BUCKET_NAME", "test-bucket")
+os.environ.setdefault("SECRET_KEY", "test-secret-key-for-unit-tests-test-secret-key-for-unit-tests")
+os.environ.setdefault("PROVERKACHEKA_TOKEN", "test-token")
+os.environ.setdefault("ANTHROPIC_API_KEY", "test-api-key")
