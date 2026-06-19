@@ -37,5 +37,5 @@ jobs:
         with:
           python-version: '3.13'
       - run: pip install poetry
-      - run: poetry install
+      - run: poetry install --no-root
       - run: poetry run pytest tests/
