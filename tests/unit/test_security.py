@@ -47,3 +47,6 @@ def test_expires_delta_is_working():
     exp = datetime.fromtimestamp(decode_token["exp"], tz=timezone.utc)
     diff = exp - datetime.now(timezone.utc)
     assert timedelta(minutes=32) < diff < timedelta(minutes=34)
+
+# Запустить тесты:
+# poetry run pytest tests/unit/ -v
