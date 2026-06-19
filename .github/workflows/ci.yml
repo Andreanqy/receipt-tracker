@@ -1,0 +1,41 @@
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password
+      POSTGRES_DB: receipt_tracker_test
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: 5432
+      REDIS_HOST: localhost
+      REDIS_PORT: 6379
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_ENDPOINT: localhost:9000
+      MINIO_BUCKET_NAME: receipts
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      PROVERKACHEKA_TOKEN: fake
+      ANTHROPIC_API_KEY: fake
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: receipt_tracker_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: pip install poetry
+      - run: poetry install
+      - run: poetry run pytest tests/
