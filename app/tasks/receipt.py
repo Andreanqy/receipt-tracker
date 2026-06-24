@@ -60,8 +60,18 @@ async def _handle(
 async def _mark_failed(receipt_id: str) -> None:
     async with _task_session_maker() as db:
         receipt = await get_receipt_by_id(db, uuid.UUID(receipt_id))
-        if receipt:
-            await update_receipt_after_processing(db, receipt, status=ReceiptStatus.FAILED)
+        if not receipt:
+            return
+        await update_receipt_after_processing(db, receipt, status=ReceiptStatus.FAILED)
+
+        user_result = await db.execute(select(User).where(User.id == receipt.user_id))
+        user = user_result.scalar_one_or_none()
+        if user and user.telegram_chat_id:
+            bot = Bot(token=settings.TELEGRAM_BOT_SECRET_KEY)
+            try:
+                await bot.send_message(user.telegram_chat_id, "Не удалось обработать чек. Убедитесь, что на фото виден QR-код.")
+            finally:
+                await bot.session.close()
 
 
 async def _process(receipt_id: str) -> None:
