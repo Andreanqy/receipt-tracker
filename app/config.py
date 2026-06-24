@@ -34,6 +34,10 @@ class Settings(BaseSettings):
     # Env
     SECRET_KEY: str
 
+    # Telegram Settings
+    TELEGRAM_BOT_SECRET_KEY: str
+    API_URL: str = "http://web:8000"
+
     # External API (proverkacheka.com)
     PROVERKACHEKA_TOKEN: str
 

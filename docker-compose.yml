@@ -56,6 +56,21 @@ services:
     networks:
       - app_network
 
+  bot:
+    build: .
+    container_name: receipt_tracker_bot
+    command: python -m bot.main
+    volumes:
+      - ./app:/app/app
+      - ./bot:/app/bot
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - web
+    networks:
+      - app_network
+
   celery_worker:
     build: .
     container_name: receipt_tracker_celery

@@ -5,13 +5,16 @@ from datetime import datetime, timezone
 from io import BytesIO
 
 import httpx
+from aiogram import Bot
 from PIL import Image
 from pyzbar.pyzbar import decode
 
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.pool import NullPool
 
 from app.config import settings
+from app.models.user import User
 from app.services.categorization import categorize_items
 from app.crud.receipt import (
     create_receipt_items,
@@ -114,3 +117,14 @@ async def _process(receipt_id: str) -> None:
             qr_raw_data=qr_raw,
             operation_time=operation_time,
         )
+
+        user_result = await db.execute(select(User).where(User.id == receipt.user_id))
+        user = user_result.scalar_one_or_none()
+        if user and user.telegram_chat_id:
+            item_lines = "\n".join(f"  • {i['name']}: {i['sum']} ₽" for i in items)
+            text = f"Чек обработан!\n\nПозиции:\n{item_lines}\n\nИтого: {total_sum} ₽"
+            bot = Bot(token=settings.TELEGRAM_BOT_SECRET_KEY)
+            try:
+                await bot.send_message(user.telegram_chat_id, text)
+            finally:
+                await bot.session.close()
