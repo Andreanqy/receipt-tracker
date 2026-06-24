@@ -1,6 +1,9 @@
 from datetime import date, datetime, timedelta
 from io import BytesIO
 
+import colorsys
+
+import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 from aiogram import F, Router
 from aiogram.filters import Command
@@ -52,6 +55,42 @@ def _parse_date(text: str) -> date:
     return datetime.strptime(text.strip(), "%d-%m-%Y").date()
 
 
+_GROUP_BASE_COLORS = {
+    "Продукты питания": "#2ecc71",
+    "Алкоголь": "#e74c3c",
+    "Кафе и рестораны": "#e67e22",
+    "Аптека": "#1abc9c",
+    "Транспорт": "#3498db",
+    "Электроника": "#9b59b6",
+    "Одежда и обувь": "#f39c12",
+    "Бытовая химия": "#16a085",
+    "Развлечения": "#e91e63",
+    "Прочее": "#95a5a6",
+}
+
+
+def _category_colors(labels: list[str]) -> list:
+    from collections import defaultdict
+
+    groups: dict[str, list[int]] = defaultdict(list)
+    for i, label in enumerate(labels):
+        group = label.split(":")[0].strip()
+        groups[group].append(i)
+
+    colors = ["#cccccc"] * len(labels)
+    for group, indices in groups.items():
+        base_hex = _GROUP_BASE_COLORS.get(group, "#7f8c8d")
+        r, g, b = mcolors.to_rgb(base_hex)
+        h, s, v = colorsys.rgb_to_hsv(r, g, b)
+        n = len(indices)
+        for step, idx in enumerate(indices):
+            factor = step / max(n - 1, 1) if n > 1 else 0.5
+            s_new = max(0.3, s - 0.3 * factor)
+            v_new = min(1.0, v + 0.25 * factor)
+            colors[idx] = mcolors.to_hex(colorsys.hsv_to_rgb(h, s_new, v_new))
+    return colors
+
+
 async def _send_summary(message: Message, chat_id: int, from_date: date, to_date: date):
     async with async_session_maker() as db:
         result = await db.execute(select(User).where(User.telegram_chat_id == chat_id))
@@ -76,9 +115,10 @@ async def _send_summary(message: Message, chat_id: int, from_date: date, to_date
     if summary["by_category"]:
         labels = [c["category"] for c in summary["by_category"]]
         values = [float(c["sum"]) for c in summary["by_category"]]
+        colors = _category_colors(labels)
 
         fig, ax = plt.subplots(figsize=(8, 5))
-        wedges, _, autotexts = ax.pie(values, autopct="%1.1f%%", startangle=90)
+        wedges, _, autotexts = ax.pie(values, colors=colors, autopct="%1.1f%%", startangle=90)
         ax.legend(wedges, labels, title="Категории", loc="center left", bbox_to_anchor=(1, 0, 0.5, 1))
         ax.set_title("Расходы по категориям")
 
