@@ -83,17 +83,24 @@ async def _process(receipt_id: str) -> None:
         object_name = receipt.filepath[len(settings.MINIO_BUCKET_NAME) + 1:]
         file_bytes = await s3_service.download_file(object_name)
 
-        image = Image.open(BytesIO(file_bytes))
-        codes = decode(image)
-        if not codes:
-            raise ValueError("No QR code found in image")
-        qr_raw = codes[0].data.decode("utf-8")
-
+        qr_raw = None
         async with httpx.AsyncClient(timeout=30.0) as client:
-            response = await client.post(
-                "https://proverkacheka.com/api/v1/check/get",
-                json={"token": settings.PROVERKACHEKA_TOKEN, "qrraw": qr_raw},
-            )
+            if settings.USE_QR_FILE:
+                response = await client.post(
+                    "https://proverkacheka.com/api/v1/check/get",
+                    data={"token": settings.PROVERKACHEKA_TOKEN},
+                    files={"qrfile": ("receipt.jpg", file_bytes, "image/jpeg")},
+                )
+            else:
+                image = Image.open(BytesIO(file_bytes))
+                codes = decode(image)
+                if not codes:
+                    raise ValueError("No QR code found in image")
+                qr_raw = codes[0].data.decode("utf-8")
+                response = await client.post(
+                    "https://proverkacheka.com/api/v1/check/get",
+                    json={"token": settings.PROVERKACHEKA_TOKEN, "qrraw": qr_raw},
+                )
             response.raise_for_status()
             data = response.json()
 

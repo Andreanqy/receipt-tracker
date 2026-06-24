@@ -38,6 +38,9 @@ class Settings(BaseSettings):
     TELEGRAM_BOT_SECRET_KEY: str
     API_URL: str = "http://web:8000"
 
+    # Feature flags
+    USE_QR_FILE: bool = True
+
     # External API (proverkacheka.com)
     PROVERKACHEKA_TOKEN: str
 
