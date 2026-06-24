@@ -15,6 +15,7 @@ jobs:
       MINIO_ENDPOINT: localhost:9000
       MINIO_BUCKET_NAME: receipts
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      TELEGRAM_BOT_SECRET_KEY: ${{ secrets.TELEGRAM_BOT_SECRET_KEY }}
       PROVERKACHEKA_TOKEN: fake
       ANTHROPIC_API_KEY: fake
     services:
