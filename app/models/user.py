@@ -22,5 +22,14 @@ class User(Base):
         String(255),
         nullable=False
     )
+    telegram_chat_id: Mapped[int | None] = mapped_column(
+        nullable=True,
+        unique=True,
+        index=True
+    )
+    bot_token: Mapped[str | None] = mapped_column(
+        String(500),
+        nullable=True
+    )
 
     receipts = relationship("Receipt", back_populates="user", cascade="all, delete-orphan")
